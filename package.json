@@ -1,0 +1,30 @@
+{
+    "name": "ncd-red-wireless-2",
+    "version": "2.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ncd-io/ncd-red-wireless-2"
+    },
+    "keywords": [
+        "Wireless",
+        "NCD",
+        "Sensors",
+        "Digi",
+        "node-red"
+    ],
+    "author": "Trey Felton",
+    "license": "MIT",
+    "node-red": {
+        "nodes": {
+            "ncd-wireless": "wireless.js"
+        }
+    },
+    "dependencies": {
+        "ncd-red-comm": "~1.8.0"
+    }
+}
