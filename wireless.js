@@ -214,6 +214,12 @@ module.exports = function(RED) {
 					}else{
 						var mac = sensor.mac;
 						var promises = {
+							// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
+
+							establish_config_network_1: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+							establish_config_network_2: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+							establish_config_network_3: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+
 							destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
 							// id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
 							// power: node.config_gateway.config_set_power(mac, parseInt(config.power)),
@@ -298,14 +304,23 @@ module.exports = function(RED) {
 								if(config.on_request_timeout_80_active){
 									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								if(config.deadband_80_active){
+									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_timeout_80));
+								}
+																promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 81:
-								if(config.output_data_rate_101_active){
-									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
+								if(config.output_data_rate_p1_81_active){
+									promises.output_data_rate_p1_81 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_p1_81));
 								}
-								if(config.sampling_duration_101_active){
-									promises.sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
+								if(config.output_data_rate_p2_81_active){
+									promises.output_data_rate_p2_81 = node.config_gateway.config_set_output_data_rate_p2_81(mac, parseInt(config.output_data_rate_p2_81));
+								}
+								if(config.sampling_duration_p1_81_active){
+									promises.sampling_duration_p1_81 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_p1_81));
+								}
+								if(config.sampling_duration_p2_81_active){
+									promises.sampling_duration_p2_81 = node.config_gateway.config_set_sampling_duration_p2_81(mac, parseInt(config.sampling_duration_p2_81));
 								}
 								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
 									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
@@ -326,7 +341,7 @@ module.exports = function(RED) {
 									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
 								}
 								if(config.on_request_timeout_80_active){
-									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
+									promises.on_request_timeout = node.config_gateway.config_set_on_request_timeout_80(mac, parseInt(config.on_request_timeout_80));
 								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
