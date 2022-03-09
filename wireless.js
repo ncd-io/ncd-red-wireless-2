@@ -53,11 +53,11 @@ module.exports = function(RED) {
 		node.on('close', (done) => {
 			console.log('closing');
 			//if(removed){
-				node.gateway._emitter.removeAllListeners('sensor_data');
-				node.gateway.digi.serial.close(() => {
-					delete gateway_pool[this.port];
-					done();
-				});
+			node.gateway._emitter.removeAllListeners('sensor_data');
+			node.gateway.digi.serial.close(() => {
+				delete gateway_pool[this.port];
+				done();
+			});
 			// }else{
 			// 	done();
 			// }
@@ -185,7 +185,7 @@ module.exports = function(RED) {
 			events[event] = cb;
 			this.config_gateway.on(event, cb);
 		};
-		function _config(sensor){
+		function _config(sensor, otf = false){
 			return new Promise((top_fulfill, top_reject) => {
 
 				var success = {};
@@ -213,28 +213,42 @@ module.exports = function(RED) {
 						};
 					}else{
 						var mac = sensor.mac;
-						var promises = {
-							// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
+						// TODO #otf if an otf command, skip standard config options and only send necessary
+						// This can be removed after a timing update to firmware of OTF compatible sensors
+						if(otf){
+							var promises = {};
+						}
+						else{
+							var promises = {
+								// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
 
-							establish_config_network_1: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-							establish_config_network_2: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-							establish_config_network_3: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+								//TODO #otf uncomment below
+								establish_config_network_1: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+								establish_config_network_2: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+								establish_config_network_3: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
 
-							destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
-							// id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
-							// power: node.config_gateway.config_set_power(mac, parseInt(config.power)),
-							// retries: node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
-							network_id: node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
-						};
-						if(config.node_id_delay_active){
-							promises.id_and_delay = node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay));
+								destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
+								// id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
+								// power: node.config_gateway.config_set_power(mac, parseInt(config.power)),
+								// retries: node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
+								// #OTF mark - causes failure
+								network_id: node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
+							};
 						}
-						if(config.power_active){
-							promises.power = node.config_gateway.config_set_power(mac, parseInt(config.power));
+						// TODO #otf if an otf command, skip standard config options and only send necessary
+						// This can be removed after a timing update to firmware of OTF compatible sensors
+						if(!otf){
+							if(config.node_id_delay_active){
+								promises.id_and_delay = node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay));
+							}
+							if(config.power_active){
+								promises.power = node.config_gateway.config_set_power(mac, parseInt(config.power));
+							}
+							if(config.retries_active){
+								promises.retries = node.config_gateway.config_set_retries(mac, parseInt(config.retries));
+							}
 						}
-						if(config.retries_active){
-							promises.retries = node.config_gateway.config_set_retries(mac, parseInt(config.retries));
-						}
+
 						var change_detection = [13, 10, 3];
 						if(change_detection.indexOf(sensor.type) > -1){
 							promises.change_detection = node.config_gateway.config_set_change_detection(mac, config.change_enabled ? 1 : 0, parseInt(config.change_pr), parseInt(config.change_interval));
@@ -307,7 +321,7 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_timeout_80));
 								}
-																promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 81:
 								if(config.output_data_rate_p1_81_active){
@@ -379,7 +393,7 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_timeout_80));
 								}
-																promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 							case 101:
 								if(config.output_data_rate_101_active){
 									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
@@ -428,10 +442,12 @@ module.exports = function(RED) {
 						});
 					});
 					for(var i in promises){
+						// console.log(i);
 						(function(name){
 							promises[name].then((f) => {
 								if(name != 'finish') success[name] = true;
 								else{
+									// #OTF
 									node.send({topic: 'Config Results', payload: success});
 									top_fulfill(success);
 								}
@@ -458,7 +474,7 @@ module.exports = function(RED) {
 				});
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
-				console.log(sensor.mode);
+				// console.log(sensor.mode);
 				if(sensor.mode in modes){
 					node.status(modes[sensor.mode]);
 				}
@@ -467,6 +483,8 @@ module.exports = function(RED) {
 				}
 				if(config.auto_config && sensor.mode == "PGM"){
 					_config(sensor);
+				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "FLY"){
+					_config(sensor, true);
 				}
 			});
 		}else if(config.sensor_type){
@@ -490,6 +508,8 @@ module.exports = function(RED) {
 					}
 					if(config.auto_config && sensor.mode == 'PGM'){
 						_config(sensor);
+					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "FLY"){
+						_config(sensor, true);
 					}
 				}
 			});
@@ -517,9 +537,9 @@ module.exports = function(RED) {
 	RED.nodes.registerType("ncd-wireless-node", NcdWirelessNode);
 
 	RED.httpAdmin.post("/ncd/wireless/gateway/config/:id", RED.auth.needsPermission("serial.read"), function(req,res) {
-        var node = RED.nodes.getNode(req.params.id);
-        if (node != null) {
-            try {
+		var node = RED.nodes.getNode(req.params.id);
+		if (node != null) {
+			try {
 				//console.log(node);
 				var _pan = node._gateway_node.gateway.pan_id;
 				var pan = node._gateway_node.is_config ? [_pan >> 8, _pan & 255] : [0x7b, 0xcd];
@@ -534,18 +554,18 @@ module.exports = function(RED) {
 						res.send(msgs[m]);
 					});
 				});
-            } catch(err) {
-                res.sendStatus(500);
-                node.error(RED._("gateway.update failed",{error:err.toString()}));
-            }
-        } else {
-            res.sendStatus(404);
-        }
-    });
+			} catch(err) {
+				res.sendStatus(500);
+				node.error(RED._("gateway.update failed",{error:err.toString()}));
+			}
+		} else {
+			res.sendStatus(404);
+		}
+	});
 
 	RED.httpAdmin.get("/ncd/wireless/sensors/configure/:id", RED.auth.needsPermission('serial.read'), function(req,res) {
 		var node = RED.nodes.getNode(req.params.id);
-        if (node != null) {
+		if (node != null) {
 			node._sensor_config().then((s) => {
 				res.json(s);
 			});
@@ -582,8 +602,8 @@ module.exports = function(RED) {
 	});
 	RED.httpAdmin.get("/ncd/wireless/sensors/list/:id", RED.auth.needsPermission('serial.read'), function(req,res) {
 		var node = RED.nodes.getNode(req.params.id);
-        if (node != null) {
-            try {
+		if (node != null) {
+			try {
 				var sensors = [];
 
 				for(var i in node.gateway.sensor_pool){
@@ -591,21 +611,21 @@ module.exports = function(RED) {
 					sensors.push(node.gateway.sensor_pool[i]);
 				}
 				res.json(sensors);
-            } catch(err) {
-                res.sendStatus(500);
-                node.error(RED._("sensor_list.failed",{error:err.toString()}));
-            }
-        } else {
-            res.json({});
-        }
+			} catch(err) {
+				res.sendStatus(500);
+				node.error(RED._("sensor_list.failed",{error:err.toString()}));
+			}
+		} else {
+			res.json({});
+		}
 	});
 	RED.httpAdmin.get("/ncd/wireless/needs_input/:id", RED.auth.needsPermission('tcp.read'), function(req,res) {
 		var node = RED.nodes.getNode(req.params.id);
-        if (node != null) {
-            return {needs_input: node.raw_input};
-        } else {
-            res.json({needs_input: false});
-        }
+		if (node != null) {
+			return {needs_input: node.raw_input};
+		} else {
+			res.json({needs_input: false});
+		}
 	});
 };
 function getSerialDevices(ftdi, res){
@@ -623,9 +643,9 @@ function getSerialDevices(ftdi, res){
 function chunkString1(str, len) {
 	var _length = str.length,
 		_size = Math.ceil(_length/len),
-    	_ret  = [];
+		_ret  = [];
 	for(var _i=0; _i<_length; _i+=len) {
-    	_ret.push(str.substring(_i, _i + len));
+		_ret.push(str.substring(_i, _i + len));
 	}
 	return _ret;
 }
