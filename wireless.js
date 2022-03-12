@@ -442,7 +442,8 @@ module.exports = function(RED) {
 						});
 					});
 					for(var i in promises){
-						// console.log(i);
+						console.log('#otf list promises');
+						console.log(i);
 						(function(name){
 							promises[name].then((f) => {
 								if(name != 'finish') success[name] = true;
