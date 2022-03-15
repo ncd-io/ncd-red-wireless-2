@@ -212,7 +212,7 @@ module.exports = function(RED) {
 							delay: node.gateway.config_powered_device(config.addr, 'delay', ...int2Bytes(parseInt(config.delay), 2))
 						};
 					}else{
-						var mac = sensor.mac;
+						var mac = sensor.addr;
 						var promises = {
 							// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
 
@@ -236,7 +236,7 @@ module.exports = function(RED) {
 							promises.retries = node.config_gateway.config_set_retries(mac, parseInt(config.retries));
 						}
 						var change_detection = [13, 10, 3];
-						if(change_detection.indexOf(sensor.type) > -1){
+						if(change_detection.indexOf(sensor.sensor_type) > -1){
 							promises.change_detection = node.config_gateway.config_set_change_detection(mac, config.change_enabled ? 1 : 0, parseInt(config.change_pr), parseInt(config.change_interval));
 						}
 						switch(sensor.type){
@@ -307,7 +307,7 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_timeout_80));
 								}
-																promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 81:
 								if(config.output_data_rate_p1_81_active){
@@ -481,7 +481,7 @@ module.exports = function(RED) {
 			});
 
 			this.pgm_on('sensor_mode', (sensor) => {
-				if(sensor.type == config.sensor_type){
+				if(sensor.sensor_type == config.sensor_type){
 					if(sensor.mode in modes){
 						node.status(modes[sensor.mode]);
 					}
@@ -587,7 +587,7 @@ module.exports = function(RED) {
 				var sensors = [];
 
 				for(var i in node.gateway.sensor_pool){
-					if(node.sensor_pool.indexOf(node.gateway.sensor_pool[i].mac) > -1) continue;
+					if(node.sensor_pool.indexOf(node.gateway.sensor_pool[i].addr) > -1) continue;
 					sensors.push(node.gateway.sensor_pool[i]);
 				}
 				res.json(sensors);
