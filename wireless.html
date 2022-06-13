@@ -211,7 +211,7 @@
             on_request_timeout_80: {value: 0},
 
             deadband_80_active: {value: ""},
-            deadband_80: {value: 0},
+            deadband_80: {value: 0, validate: NCD_validators.number_range(0, 255)},
 
             filter_80_active: {value: ""},
             filter_80: {value: 0},
