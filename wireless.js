@@ -367,7 +367,7 @@ module.exports = function(RED) {
 									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
 								}
 								if(config.deadband_80_active){
-									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_timeout_80));
+									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
@@ -405,6 +405,9 @@ module.exports = function(RED) {
 								if(config.on_request_timeout_80_active){
 									promises.on_request_timeout = node.config_gateway.config_set_on_request_timeout_80(mac, parseInt(config.on_request_timeout_80));
 								}
+								if(config.deadband_80_active){
+									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
+								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 82:
@@ -439,7 +442,7 @@ module.exports = function(RED) {
 									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
 								}
 								if(config.deadband_80_active){
-									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_timeout_80));
+									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 							case 101:

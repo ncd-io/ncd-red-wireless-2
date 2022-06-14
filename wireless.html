@@ -214,8 +214,9 @@
 			on_request_timeout_80_active: {value: ""},
 			on_request_timeout_80: {value: 0},
 
-			deadband_80_active: {value: ""},
-			deadband_80: {value: 0},
+
+            deadband_80_active: {value: ""},
+            deadband_80: {value: 0, validate: NCD_validators.number_range(0, 255)},
 
 			filter_80_active: {value: ""},
 			filter_80: {value: 0},
@@ -313,6 +314,9 @@
 					"66": "DO EC Salinity TDS and Temperature Sensor",
 					"67": "PAR Sensor",
 					"69": "Soil Moisture Temperature and EC Sensor",
+					"72": "SDI Soil Moisture Temperature Moisture Probe",
+					"75": "Siemens Air Velocity Probe",
+					"76": "Wireless CO Gas Sensor",
 					"80": "One Channel Vibration Plus",
 					"81": "Two Channel Vibration Plus",
 					"82": "Condition Based/Predictive Maintenance Sensor",
@@ -325,7 +329,7 @@
 					"506": "Custom_SAP_Current_3C",
 					"507": "Custom_SAP_Current_7C",
 					"510": "GreenLight",
-					"515": "Multi-Channel Current Sensor",
+					"515": "Custom_SAP_Current_48C",
 					"10000": "4-Channel Relay",
 					"10006": "4-Channel 4-20 mA Input",
 					"10007": "4-Channel Current Monitor",
@@ -533,6 +537,7 @@
             <option value="69">Soil Moisture Temperature and EC Sensor</option>
             <option value="69">3 Channel Soil Moisture Temperature and EC Sensor</option>
             <option value="72">SDI-12 Wireless</option>
+            <option value="75">Siemens Air Velocity Probe</option>
             <option value="80">One Channel Vibration Plus</option>
             <option value="81">Two Channel Vibration Plus</option>
             <option value="82">Condition Based/Predictive Maintenance Sensor</option>
@@ -545,7 +550,7 @@
             <option value="506">Custom_SAP_Current_3C</option>
             <option value="507">Custom_SAP_Current_7C</option>
             <option value="510">GreenLight</option>
-            <option value="515">Multi-Channel Current Sensor</option>
+            <option value="515">Custom_SAP_Current_7C</option>
             <option value="10000">4-Channel Relay</option>
             <option value="10006">4-Channel 4-20 mA Input</option>
             <option value="10007">4-Channel Current Monitor</option>
