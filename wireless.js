@@ -177,8 +177,8 @@ module.exports = function(RED) {
 			// OTN: {fill:"yellow",shape:"ring",text:"OTN Received, OTF Configuration Initiated"},
 			// OFF: {fill:"green",shape:"dot",text:"OFF Recieved, OTF Configuration Completed"}
 			FLY: {fill:"yellow",shape:"ring",text:"FLY"},
-			OTN: {fill:"yellow",shape:"ring",text:"OTN"},
-			OFF: {fill:"green",shape:"dot",text:"OTF"}
+			OTN: {fill:"yellow",shape:"ring",text:"OTN Received, Config Entered"},
+			OTF: {fill:"green",shape:"dot",text:"OTF Received, Config Complete"}
 		};
 		var events = {};
 		var pgm_events = {};
@@ -190,20 +190,19 @@ module.exports = function(RED) {
 			events[event] = cb;
 			this.config_gateway.on(event, cb);
 		};
-		function _send_otf_request(sensor){
+		function _send_otn_request(sensor){
 			return new Promise((top_fulfill, top_reject) => {
 				var msg = {};
 				setTimeout(() => {
 					var tout = setTimeout(() => {
 						node.status(modes.PGM_ERR);
-						node.send({topic: 'OTF Request Results', payload: msg});
+						node.send({topic: 'OTN Request Results', payload: msg});
 					}, 60000);
 
-					// node.gateway.config_enter_otf_mode(config.addr);
 					var promises = {};
 
 
-					promises.config_enter_OTN_mode = node.config_gateway.config_enter_otf_mode(config.addr);
+					promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(config.addr);
 
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
@@ -232,22 +231,6 @@ module.exports = function(RED) {
 						})(i);
 					}
 				});
-				// for(var i in promises){
-				// 	console.log('#otf list promises');
-				// 	console.log(i);
-				// 	(function(name){
-				// 		promises[name].then((f) => {
-				// 			if(name != 'finish') success[name] = true;
-				// 			else{
-				// 				// #OTF
-				// 				node.send({topic: 'Config Results', payload: success});
-				// 				top_fulfill(success);
-				// 			}
-				// 		}).catch((err) => {
-				// 			success[name] = err;
-				// 		});
-				// 	})(i);
-				// }
 			});
 		};
 		function _config(sensor, otf = false){
@@ -497,7 +480,7 @@ module.exports = function(RED) {
 						}
 					}
 					if(otf){
-						promises.end_otf_config = node.config_gateway.config_exit_otf_mode(mac);
+						promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
 					}
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
@@ -550,7 +533,7 @@ module.exports = function(RED) {
 				if(config.auto_config && sensor.mode == "PGM"){
 					_config(sensor);
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "FLY"){
-					_send_otf_request(sensor);
+					_send_otn_request(sensor);
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 					_config(sensor, true);
 				}
@@ -578,7 +561,7 @@ module.exports = function(RED) {
 					if(config.auto_config && sensor.mode == 'PGM'){
 						_config(sensor);
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "FLY"){
-						_send_otf_request(sensor);
+						_send_otn_request(sensor);
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 						_config(sensor, true);
 					}
