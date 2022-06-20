@@ -197,7 +197,7 @@ module.exports = function(RED) {
 					var tout = setTimeout(() => {
 						node.status(modes.PGM_ERR);
 						node.send({topic: 'OTN Request Results', payload: msg});
-					}, 60000);
+					}, 10000);
 
 					var promises = {};
 
@@ -536,7 +536,12 @@ module.exports = function(RED) {
 				if(config.auto_config && sensor.mode == "PGM"){
 					_config(sensor);
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "FLY"){
-					_send_otn_request(sensor);
+					// _send_otn_request(sensor);
+					// Sensors having issues seeing OTN request sent too quickly
+					// Added timeout to fix issue
+					var tout = setTimeout(() => {
+						_send_otn_request(sensor);
+					}, 100);
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 					_config(sensor, true);
 				}
@@ -564,7 +569,12 @@ module.exports = function(RED) {
 					if(config.auto_config && sensor.mode == 'PGM'){
 						_config(sensor);
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "FLY"){
-						_send_otn_request(sensor);
+						// _send_otn_request(sensor);
+						// Sensors having issues seeing OTN request sent too quickly
+						// Added timeout to fix issue
+						var tout = setTimeout(() => {
+							_send_otn_request(sensor);
+						}, 100);
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 						_config(sensor, true);
 					}
