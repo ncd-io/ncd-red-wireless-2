@@ -320,6 +320,7 @@
 					"80": "One Channel Vibration Plus",
 					"81": "Two Channel Vibration Plus",
 					"82": "Condition Based/Predictive Maintenance Sensor",
+					"84": "Type 84 - Vibration on a stick",
 					"101": "Pro Vibration",
 					"102": "Strain Gauge",
 					"200": "4-20mA Pass Through",
@@ -541,6 +542,7 @@
             <option value="80">One Channel Vibration Plus</option>
             <option value="81">Two Channel Vibration Plus</option>
             <option value="82">Condition Based/Predictive Maintenance Sensor</option>
+			<option value="84">Type 84 - Vibration on a stick</option>
             <option value="101">Pro Vibration</option>
             <option value="102">Strain Gauge</option>
             <option value="200">4-20mA Pass Through</option>
@@ -564,7 +566,7 @@
 				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
 				<input class="section-control" type="checkbox" id="node-input-auto_config" value="1">
 			</div>
-            <div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-101 data-sensor-102>
+            <div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
                 <hr>
                 <label for="node-input-on_the_fly_enable"><i class="icon-tag"></i> OTF Config*</label>
                 <input type="checkbox" id="node-input-on_the_fly_enable" value="1">
@@ -823,7 +825,7 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Mode</strong>
@@ -884,7 +886,7 @@
 
 
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-101 data-sensor-102 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Output Data Rate</strong>
@@ -922,7 +924,7 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-101 data-sensor-102 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Sampling Interval</strong>
@@ -1027,7 +1029,7 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-101 data-sensor-80 data-sensor-81 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101>
                 <div class="form-row ncd-active-check">
                     <strong>Full Scale Range</strong>
                     <div>
