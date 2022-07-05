@@ -476,6 +476,12 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
+								if(config.led_parameter_84_active){
+									promises.led_parameter_84 = node.config_gateway.config_set_led_parameter_84(mac, parseInt(config.led_parameter_84));
+								}
+								if(config.led_threshold_84_active){
+									promises.led_threshold_84 = node.config_gateway.config_set_led_threshold_84(mac, parseInt(config.led_threshold_84));
+								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 101:
