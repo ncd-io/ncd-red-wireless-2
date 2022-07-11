@@ -231,11 +231,17 @@
 			sampling_duration_p2_81_active: {value: ""},
 			sampling_duration_p2_81: {value: 0},
 
-			led_parameter_84_active: {value: ""},
-			led_parameter_84: {value: 0},
+			led_alert_mode_84_active: {value: ""},
+			led_alert_mode_84: {value: 0},
 
-			led_threshold_84_active: {value: ""},
-			led_threshold_84: {},
+			led_accelerometer_threshold_84_active: {value: ""},
+			led_accelerometer_threshold_84: {},
+
+			led_velocity_threshold_84_active: {value: ""},
+			led_velocity_threshold_84: {},
+
+			acceleration_interrupt_threshold_84_active: {value: ""},
+			acceleration_interrupt_threshold_84: {},
 
 			current_calibration_82:{Value:0},
 			current_calibration_82_active:{Value:""},
@@ -834,14 +840,15 @@
 			<div class="ncd-dependent" data-sensor-84>
                 <hr>
 				<div class="form-row ncd-active-check">
-                    <strong>LED Status Parameter</strong>
+                    <strong>LED Alert Mode</strong>
+					<p>Choose whether the LED indicator should be based on Acceleration or Velocity</p>
                     <div>
-                        <label for="node-input-led_parameter_84_active"><i class="icon-tag"></i>Active:</label>
-                        <input type="checkbox" id="node-input-led_parameter_84_active" class="ncd-config-toggle" data-target-id="node-input-led_parameter_84" value="1">
+                        <label for="node-input-led_alert_mode_84_active"><i class="icon-tag"></i>Active:</label>
+                        <input type="checkbox" id="node-input-led_alert_mode_84_active" class="ncd-config-toggle" data-target-id="node-input-led_alert_mode_84" value="1">
                     </div>
                     <div>
-                        <label for="node-input-led_parameter_84"><i class="icon-tag"></i>Value:</label>
-                        <select id="node-input-led_parameter_84">
+                        <label for="node-input-led_alert_mode_84"><i class="icon-tag"></i>Value:</label>
+                        <select id="node-input-led_alert_mode_84">
                             <option value="0">Acceleration</option>
                             <option value="1">Velocity</option>
                         </select>
@@ -849,15 +856,45 @@
                 </div>
 				<div class="form-row ncd-active-check">
 	                <div>
-	                    <p><strong>LED Status Threshold</strong><p>
+	                    <strong>LED Accelerometer Threshold</strong>
+						<p>Set the minimum acceleration value to make LED indicator red.<br>This will be an integer value that increments the threshold by 50mg. A value of 1 means turn the LED red if acceleration is above 50mg, 2 means 100mg, etc.<br>**Only applies if LED Alert Mode is set to Acceleration.<p>
 	                </div>
 	                <div>
-	                    <label for="node-input-led_threshold_84_active"><i class="icon-tag"></i>  Auto Config</label>
-	                    <input type="checkbox" id="node-input-led_threshold_84_active" class="ncd-config-toggle" data-target-id="node-input-led_threshold_84" value="1">
+	                    <label for="node-input-led_accelerometer_threshold_84_active"><i class="icon-tag"></i>  Auto Config</label>
+	                    <input type="checkbox" id="node-input-led_accelerometer_threshold_84_active" class="ncd-config-toggle" data-target-id="node-input-led_accelerometer_threshold_84" value="1">
 	                </div>
 	                <div>
-	                    <label for="node-input-led_threshold_84"><i class="icon-tag"></i>  Value</label>
-	                    <input type="text" id="node-input-led_threshold_84" placeholder="455" value="455">
+	                    <label for="node-input-led_accelerometer_threshold_84"><i class="icon-tag"></i>  Value</label>
+	                    <input type="text" id="node-input-led_accelerometer_threshold_84" placeholder="10" value="10">
+	                </div>
+				</div>
+				<div class="form-row ncd-active-check">
+	                <div>
+	                    <strong>LED Velocity Threshold</strong>
+						<p>Set the minimum velocity value to make LED indicator red.<br>This will be an integer value that increments the threshold by 2mm/second. A value of 1 means turn the LED red if velocity is above 2mm/sec, 2 means 4mm/second, etc.<br>**Only applies if LED Alert Mode is set to Velocity.<p>
+	                </div>
+	                <div>
+	                    <label for="node-input-led_velocity_threshold_84_active"><i class="icon-tag"></i>  Auto Config</label>
+	                    <input type="checkbox" id="node-input-led_velocity_threshold_84_active" class="ncd-config-toggle" data-target-id="node-input-led_velocity_threshold_84" value="1">
+	                </div>
+	                <div>
+	                    <label for="node-input-led_velocity_threshold_84"><i class="icon-tag"></i>  Value</label>
+	                    <input type="text" id="node-input-led_velocity_threshold_84" placeholder="10" value="10">
+	                </div>
+				</div>
+				<div class="form-row ncd-active-check">
+	                <div>
+	                    <strong>Set Acceleration Wake/Interrupt Threshold</strong>
+						<p>Set a breakpoint for sensor to wake up and broadcast readings. This is an interrupt based configuration ideal for devices with minimal workload/uptime.</p>
+						<p>This will be an integer value that increments the interrupt threshold by 50mg. A value of 1 means turn the wake the sensor if acceleration is above 50mg, 2 means 100mg, etc.</p>
+	                </div>
+	                <div>
+	                    <label for="node-input-acceleration_interrupt_threshold_84_active"><i class="icon-tag"></i>  Auto Config</label>
+	                    <input type="checkbox" id="node-input-acceleration_interrupt_threshold_84_active" class="ncd-config-toggle" data-target-id="node-input-acceleration_interrupt_threshold_84" value="1">
+	                </div>
+	                <div>
+	                    <label for="node-input-acceleration_interrupt_threshold_84"><i class="icon-tag"></i>  Value</label>
+	                    <input type="text" id="node-input-acceleration_interrupt_threshold_84" placeholder="10" value="10">
 	                </div>
 				</div>
             </div>
