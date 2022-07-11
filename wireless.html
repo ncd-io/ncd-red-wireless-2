@@ -231,6 +231,18 @@
 			sampling_duration_p2_81_active: {value: ""},
 			sampling_duration_p2_81: {value: 0},
 
+			led_alert_mode_84_active: {value: ""},
+			led_alert_mode_84: {value: 0},
+
+			led_accelerometer_threshold_84_active: {value: ""},
+			led_accelerometer_threshold_84: {},
+
+			led_velocity_threshold_84_active: {value: ""},
+			led_velocity_threshold_84: {},
+
+			acceleration_interrupt_threshold_84_active: {value: ""},
+			acceleration_interrupt_threshold_84: {},
+
 			current_calibration_82:{Value:0},
 			current_calibration_82_active:{Value:""},
 			output_data_rate_101_active: {value: ""},
@@ -320,6 +332,7 @@
 					"80": "One Channel Vibration Plus",
 					"81": "Two Channel Vibration Plus",
 					"82": "Condition Based/Predictive Maintenance Sensor",
+					"84": "Type 84 - Vibration on a stick",
 					"101": "Pro Vibration",
 					"102": "Strain Gauge",
 					"200": "4-20mA Pass Through",
@@ -541,6 +554,7 @@
             <option value="80">One Channel Vibration Plus</option>
             <option value="81">Two Channel Vibration Plus</option>
             <option value="82">Condition Based/Predictive Maintenance Sensor</option>
+			<option value="84">Type 84 - Vibration on a stick</option>
             <option value="101">Pro Vibration</option>
             <option value="102">Strain Gauge</option>
             <option value="200">4-20mA Pass Through</option>
@@ -564,7 +578,7 @@
 				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
 				<input class="section-control" type="checkbox" id="node-input-auto_config" value="1">
 			</div>
-            <div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-101 data-sensor-102>
+            <div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
                 <hr>
                 <label for="node-input-on_the_fly_enable"><i class="icon-tag"></i> OTF Config*</label>
                 <input type="checkbox" id="node-input-on_the_fly_enable" value="1">
@@ -823,7 +837,69 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82>
+			<div class="ncd-dependent" data-sensor-84>
+                <hr>
+				<div class="form-row ncd-active-check">
+                    <strong>LED Alert Mode</strong>
+					<p>Choose whether the LED indicator should be based on Acceleration or Velocity</p>
+                    <div>
+                        <label for="node-input-led_alert_mode_84_active"><i class="icon-tag"></i>Active:</label>
+                        <input type="checkbox" id="node-input-led_alert_mode_84_active" class="ncd-config-toggle" data-target-id="node-input-led_alert_mode_84" value="1">
+                    </div>
+                    <div>
+                        <label for="node-input-led_alert_mode_84"><i class="icon-tag"></i>Value:</label>
+                        <select id="node-input-led_alert_mode_84">
+                            <option value="0">Acceleration</option>
+                            <option value="1">Velocity</option>
+                        </select>
+                    </div>
+                </div>
+				<div class="form-row ncd-active-check">
+	                <div>
+	                    <strong>LED Accelerometer Threshold</strong>
+						<p>Set the minimum acceleration value to make LED indicator red.<br>This will be an integer value that increments the threshold by 50mg. A value of 1 means turn the LED red if acceleration is above 50mg, 2 means 100mg, etc.<br>**Only applies if LED Alert Mode is set to Acceleration.<p>
+	                </div>
+	                <div>
+	                    <label for="node-input-led_accelerometer_threshold_84_active"><i class="icon-tag"></i>  Auto Config</label>
+	                    <input type="checkbox" id="node-input-led_accelerometer_threshold_84_active" class="ncd-config-toggle" data-target-id="node-input-led_accelerometer_threshold_84" value="1">
+	                </div>
+	                <div>
+	                    <label for="node-input-led_accelerometer_threshold_84"><i class="icon-tag"></i>  Value</label>
+	                    <input type="text" id="node-input-led_accelerometer_threshold_84" placeholder="10" value="10">
+	                </div>
+				</div>
+				<div class="form-row ncd-active-check">
+	                <div>
+	                    <strong>LED Velocity Threshold</strong>
+						<p>Set the minimum velocity value to make LED indicator red.<br>This will be an integer value that increments the threshold by 2mm/second. A value of 1 means turn the LED red if velocity is above 2mm/sec, 2 means 4mm/second, etc.<br>**Only applies if LED Alert Mode is set to Velocity.<p>
+	                </div>
+	                <div>
+	                    <label for="node-input-led_velocity_threshold_84_active"><i class="icon-tag"></i>  Auto Config</label>
+	                    <input type="checkbox" id="node-input-led_velocity_threshold_84_active" class="ncd-config-toggle" data-target-id="node-input-led_velocity_threshold_84" value="1">
+	                </div>
+	                <div>
+	                    <label for="node-input-led_velocity_threshold_84"><i class="icon-tag"></i>  Value</label>
+	                    <input type="text" id="node-input-led_velocity_threshold_84" placeholder="10" value="10">
+	                </div>
+				</div>
+				<div class="form-row ncd-active-check">
+	                <div>
+	                    <strong>Set Acceleration Wake/Interrupt Threshold</strong>
+						<p>Set a breakpoint for sensor to wake up and broadcast readings. This is an interrupt based configuration ideal for devices with minimal workload/uptime.</p>
+						<p>This will be an integer value that increments the interrupt threshold by 50mg. A value of 1 means turn the wake the sensor if acceleration is above 50mg, 2 means 100mg, etc.</p>
+	                </div>
+	                <div>
+	                    <label for="node-input-acceleration_interrupt_threshold_84_active"><i class="icon-tag"></i>  Auto Config</label>
+	                    <input type="checkbox" id="node-input-acceleration_interrupt_threshold_84_active" class="ncd-config-toggle" data-target-id="node-input-acceleration_interrupt_threshold_84" value="1">
+	                </div>
+	                <div>
+	                    <label for="node-input-acceleration_interrupt_threshold_84"><i class="icon-tag"></i>  Value</label>
+	                    <input type="text" id="node-input-acceleration_interrupt_threshold_84" placeholder="10" value="10">
+	                </div>
+				</div>
+            </div>
+
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Mode</strong>
@@ -884,7 +960,7 @@
 
 
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-101 data-sensor-102 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Output Data Rate</strong>
@@ -922,7 +998,7 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-101 data-sensor-102 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Sampling Interval</strong>
@@ -1027,7 +1103,7 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-101 data-sensor-80 data-sensor-81 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101>
                 <div class="form-row ncd-active-check">
                     <strong>Full Scale Range</strong>
                     <div>
