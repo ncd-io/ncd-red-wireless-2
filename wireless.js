@@ -369,7 +369,9 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								if(config.set_rtc_101){
+									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								}
 								break;
 							case 81:
 								if(config.output_data_rate_p1_81_active){
@@ -408,7 +410,9 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								if(config.set_rtc_101){
+									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								}
 								break;
 							case 82:
 								if(config.current_calibration_82_active){
@@ -444,7 +448,9 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								if(config.set_rtc_101){
+									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								}
 							case 84:
 								if(config.output_data_rate_101_active){
 									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
@@ -488,7 +494,9 @@ module.exports = function(RED) {
 								if(config.acceleration_interrupt_threshold_84_active){
 									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								if(config.set_rtc_101){
+									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								}
 								break;
 							case 101:
 								if(config.output_data_rate_101_active){
