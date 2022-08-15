@@ -360,6 +360,12 @@ module.exports = function(RED) {
 								if(config.filter_80_active){
 									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
 								}
+								if(config.low_pass_filter_80_active){
+									promises.low_pass_filter = node.config_gateway.config_set_low_pass_filters_80(mac, parseInt(config.low_pass_filter_80));
+								}
+								if(config.high_pass_filter_80_active){
+									promises.high_pass_filter = node.config_gateway.config_set_high_pass_filters_80(mac, parseInt(config.high_pass_filter_80));
+								}
 								if(config.measurement_mode_80_active){
 									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
 								}
@@ -401,6 +407,12 @@ module.exports = function(RED) {
 								if(config.filter_80_active){
 									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
 								}
+								if(config.low_pass_filter_80_active){
+									promises.low_pass_filter = node.config_gateway.config_set_low_pass_filters_80(mac, parseInt(config.low_pass_filter_80));
+								}
+								if(config.high_pass_filter_80_active){
+									promises.high_pass_filter = node.config_gateway.config_set_high_pass_filters_80(mac, parseInt(config.high_pass_filter_80));
+								}
 								if(config.measurement_mode_80_active){
 									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
 								}
@@ -439,6 +451,12 @@ module.exports = function(RED) {
 								if(config.filter_80_active){
 									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
 								}
+								if(config.low_pass_filter_80_active){
+									promises.low_pass_filter = node.config_gateway.config_set_low_pass_filters_80(mac, parseInt(config.low_pass_filter_80));
+								}
+								if(config.high_pass_filter_80_active){
+									promises.high_pass_filter = node.config_gateway.config_set_high_pass_filters_80(mac, parseInt(config.high_pass_filter_80));
+								}
 								if(config.measurement_mode_80_active){
 									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
 								}
@@ -472,6 +490,12 @@ module.exports = function(RED) {
 								}
 								if(config.filter_80_active){
 									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
+								}
+								if(config.low_pass_filter_80_active){
+									promises.low_pass_filter = node.config_gateway.config_set_low_pass_filters_80(mac, parseInt(config.low_pass_filter_80));
+								}
+								if(config.high_pass_filter_80_active){
+									promises.high_pass_filter = node.config_gateway.config_set_high_pass_filters_80(mac, parseInt(config.high_pass_filter_80));
 								}
 								if(config.measurement_mode_80_active){
 									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
