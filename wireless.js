@@ -201,8 +201,7 @@ module.exports = function(RED) {
 
 					var promises = {};
 
-
-					promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(config.addr);
+					promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(sensor.mac);
 
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
