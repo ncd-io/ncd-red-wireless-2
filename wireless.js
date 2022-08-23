@@ -259,42 +259,24 @@ module.exports = function(RED) {
 						};
 					}else{
 						var mac = sensor.mac;
-						// TODO #otf if an otf command, skip standard config options and only send necessary
-						// This can be removed after a timing update to firmware of OTF compatible sensors
-						// if(otf){
-						// 	console.log('OTF is true inside _config');
-						// 	var promises = {};
-						// }
-						// else{
-							var promises = {
-								// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
+						var promises = {
+							// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
+							establish_config_network_1: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+							establish_config_network_2: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+							establish_config_network_3: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
 
-								//TODO #otf uncomment below
-								establish_config_network_1: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-								establish_config_network_2: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-								establish_config_network_3: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-
-								destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
-								// id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
-								// power: node.config_gateway.config_set_power(mac, parseInt(config.power)),
-								// retries: node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
-								// #OTF mark - causes failure
-								network_id: node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
-							};
-						// }
-						// TODO #otf if an otf command, skip standard config options and only send necessary
-						// This can be removed after a timing update to firmware of OTF compatible sensors
-						// if(!otf){
-							if(config.node_id_delay_active){
-								promises.id_and_delay = node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay));
-							}
-							if(config.power_active){
-								promises.power = node.config_gateway.config_set_power(mac, parseInt(config.power));
-							}
-							if(config.retries_active){
-								promises.retries = node.config_gateway.config_set_retries(mac, parseInt(config.retries));
-							}
-						// }
+							destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
+							network_id: node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
+						};
+						if(config.node_id_delay_active){
+							promises.id_and_delay = node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay));
+						}
+						if(config.power_active){
+							promises.power = node.config_gateway.config_set_power(mac, parseInt(config.power));
+						}
+						if(config.retries_active){
+							promises.retries = node.config_gateway.config_set_retries(mac, parseInt(config.retries));
+						}
 
 						var change_detection = [13, 10, 3];
 						if(change_detection.indexOf(sensor.type) > -1){
