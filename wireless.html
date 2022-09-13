@@ -136,6 +136,10 @@
 			}else{
 				return function(v){
 					var int = parseInt(v, base);
+					// Added to remove new settings from interfering with old nodes
+					if(v == undefined){
+						return true;
+					}
 					return int >= l && int <= h;
 				}
 			}
@@ -247,6 +251,16 @@
 
 			current_calibration_82:{Value:0},
 			current_calibration_82_active:{Value:""},
+
+			current_calibration_c1_80:{value:178, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c1_80_active:{value:""},
+
+			current_calibration_c2_80:{value:178, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c2_80_active:{value:""},
+
+			current_calibration_c3_80:{value:178, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c3_80_active:{value:""},
+
 			output_data_rate_101_active: {value: ""},
 			output_data_rate_101: {value: 0},
 			sampling_duration_101_active: {value: ""},
@@ -1271,14 +1285,56 @@
 
 			<div class="ncd-dependent" data-sensor-82>
 				<div class="form-row ncd-active-check">
-				<strong>Set Current Calibration Value</strong>
-				<div>
-					<label for="node-input-current_calibration_82_active">Active:</label>
-					<input type="checkbox" id="node-input-current_calibration_82_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_82" value="1">
-				</div>
+					<strong>Set Current Calibration Value</strong>
+					<div>
+						<label for="node-input-current_calibration_82_active">Active:</label>
+						<input type="checkbox" id="node-input-current_calibration_82_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_82" value="1">
+					</div>
 					<div>
 						<label for="node-input-current_calibration_82"><i class="icon-tag"></i>Value:</label>
 						<input type="text" id="node-input-current_calibration_82">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-505 data-sensor-506>
+				<div class="form-row ncd-active-check">
+					<strong>Channel 1 Current Calibration Value</strong>
+					<div>
+						<label for="node-input-current_calibration_c1_80_active">Active:</label>
+						<input type="checkbox" id="node-input-current_calibration_c1_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c1_80" value="1">
+					</div>
+					<div>
+						<label for="node-input-current_calibration_c1_80"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-current_calibration_c1_80" placeholder="178" value="178">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-81 data-sensor-506>
+				<div class="form-row ncd-active-check">
+				<strong>Channel 2 Current Calibration Value</strong>
+				<div>
+					<label for="node-input-current_calibration_c2_80_active">Active:</label>
+					<input type="checkbox" id="node-input-current_calibration_c2_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c2_80" value="1">
+				</div>
+					<div>
+						<label for="node-input-current_calibration_c2_80"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-current_calibration_c2_80" placeholder="178" value="178">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-506>
+				<div class="form-row ncd-active-check">
+				<strong>Channel 3 Current Calibration Value</strong>
+				<div>
+					<label for="node-input-current_calibration_c3_80_active">Active:</label>
+					<input type="checkbox" id="node-input-current_calibration_c3_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c3_80" value="1">
+				</div>
+					<div>
+						<label for="node-input-current_calibration_c3_80"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-current_calibration_c3_80" placeholder="178" value="178">
 					</div>
 				</div>
 			</div>

@@ -320,6 +320,9 @@ module.exports = function(RED) {
 								}
 								break;
 							case 80:
+								if(config.current_calibration_c1_80_active){
+									promises.current_calibration_c1_80 = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
+								}
 								if(config.output_data_rate_101_active){
 									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
 								}
@@ -361,6 +364,12 @@ module.exports = function(RED) {
 								}
 								break;
 							case 81:
+								if(config.current_calibration_c1_80_active){
+									promises.current_calibration_c1_80_active = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
+								}
+								if(config.current_calibration_c2_80_active){
+									promises.current_calibration_c2_80 = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c2_80), 3);
+								}
 								if(config.output_data_rate_p1_81_active){
 									promises.output_data_rate_p1_81 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_p1_81));
 								}
@@ -544,6 +553,20 @@ module.exports = function(RED) {
 								// }
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
+							case 505:
+								if(config.current_calibration_c1_80_active){
+									promises.current_calibration_c1_80_active = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
+								}
+							case 506:
+								if(config.current_calibration_c1_80_active){
+									promises.current_calibration_c1_80_active = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
+								}
+								if(config.current_calibration_c2_80_active){
+									promises.current_calibration_c2_80 = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c2_80), 3);
+								}
+								if(config.current_calibration_c3_80_active){
+									promises.current_calibration_c3_80 = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c3_80), 5);
+								}
 						}
 					}
 					if(otf){
