@@ -232,6 +232,48 @@ module.exports = function(RED) {
 				});
 			});
 		};
+		function _broadcast_rtc(sensor){
+			return new Promise((top_fulfill, top_reject) => {
+				var msg = {};
+				setTimeout(() => {
+					var tout = setTimeout(() => {
+						node.status(modes.PGM_ERR);
+						node.send({topic: 'RTC Broadcast', payload: msg});
+					}, 10000);
+
+					var promises = {};
+
+					promises.broadcast_rtc = node.config_gateway.config_set_rtc_101('00:00:00:00:00:00:FF:FF');
+
+					promises.finish = new Promise((fulfill, reject) => {
+						node.config_gateway.queue.add(() => {
+							return new Promise((f, r) => {
+								clearTimeout(tout);
+								node.status(modes.FLY);
+								fulfill();
+								f();
+							});
+						});
+					});
+					for(var i in promises){
+						// console.log('#otf list promises');
+						// console.log(i);
+						(function(name){
+							promises[name].then((f) => {
+								if(name != 'finish') msg[name] = true;
+								else{
+									// #OTF
+									node.send({topic: 'RTC Broadcast', payload: msg});
+									top_fulfill(msg);
+								}
+							}).catch((err) => {
+								msg[name] = err;
+							});
+						})(i);
+					}
+				});
+			});
+		}
 		function _config(sensor, otf = false){
 			return new Promise((top_fulfill, top_reject) => {
 				var success = {};
@@ -626,9 +668,22 @@ module.exports = function(RED) {
 					// _send_otn_request(sensor);
 					// Sensors having issues seeing OTN request sent too quickly
 					// Added timeout to fix issue
-					var tout = setTimeout(() => {
-						_send_otn_request(sensor);
-					}, 100);
+					// MARK TODO broadcast fix
+					if(config.sensor_type == 101 || config.sensor_type == 102){
+						if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
+							this.fly_101_in_progress = true;
+							var broadcast_tout = setTimeout(() => {
+								_broadcast_rtc(sensor);
+							}, 1000);
+						}
+						var tout = setTimeout(() => {
+							_send_otn_request(sensor);
+						}, 1200);
+					}else{
+						var tout = setTimeout(() => {
+							_send_otn_request(sensor);
+						}, 100);
+					}
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 					_config(sensor, true);
 				}
@@ -659,9 +714,22 @@ module.exports = function(RED) {
 						// _send_otn_request(sensor);
 						// Sensors having issues seeing OTN request sent too quickly
 						// Added timeout to fix issue
-						var tout = setTimeout(() => {
-							_send_otn_request(sensor);
-						}, 100);
+						// MARK TODO broadcast fix
+						if(config.sensor_type == 101 || config.sensor_type == 102){
+							if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
+								this.fly_101_in_progress = true;
+								var broadcast_tout = setTimeout(() => {
+									_broadcast_rtc(sensor);
+								}, 1000);
+							}
+							var tout = setTimeout(() => {
+								_send_otn_request(sensor);
+							}, 1200);
+						}else{
+							var tout = setTimeout(() => {
+								_send_otn_request(sensor);
+							}, 100);
+						}
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 						_config(sensor, true);
 					}
