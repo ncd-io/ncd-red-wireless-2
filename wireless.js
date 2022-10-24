@@ -263,6 +263,7 @@ module.exports = function(RED) {
 								if(name != 'finish') msg[name] = true;
 								else{
 									// #OTF
+									this.fly_101_in_progress = false;
 									node.send({topic: 'RTC Broadcast', payload: msg});
 									top_fulfill(msg);
 								}
