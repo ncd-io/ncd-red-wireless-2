@@ -660,6 +660,7 @@ module.exports = function(RED) {
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
 				console.log('Mark 3');
 				console.log(config.sensor_type);
+				console.log(sensor.mode);
 				if(sensor.mode in modes){
 					node.status(modes[sensor.mode]);
 				}
@@ -716,6 +717,7 @@ module.exports = function(RED) {
 			this.pgm_on('sensor_mode', (sensor) => {
 				console.log('Mark 4');
 				console.log(config.sensor_type);
+				console.log(sensor.mode);
 				if(sensor.type == config.sensor_type){
 					if(sensor.mode in modes){
 						node.status(modes[sensor.mode]);
