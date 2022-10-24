@@ -233,6 +233,7 @@ module.exports = function(RED) {
 			});
 		};
 		function _broadcast_rtc(sensor){
+			console.log('broadcast function');
 			return new Promise((top_fulfill, top_reject) => {
 				var msg = {};
 				setTimeout(() => {
@@ -657,6 +658,8 @@ module.exports = function(RED) {
 				});
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
+				console.log('Mark 3');
+				console.log(config.sensor_type);
 				if(sensor.mode in modes){
 					node.status(modes[sensor.mode]);
 				}
@@ -687,6 +690,7 @@ module.exports = function(RED) {
 					}
 				}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
 					// send broadcast rtc to 101 and 102 regardless of settings
+					console.log('Mark 2');
 					if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
 						this.fly_101_in_progress = true;
 						var broadcast_tout = setTimeout(() => {
@@ -710,6 +714,8 @@ module.exports = function(RED) {
 			});
 
 			this.pgm_on('sensor_mode', (sensor) => {
+				console.log('Mark 4');
+				console.log(config.sensor_type);
 				if(sensor.type == config.sensor_type){
 					if(sensor.mode in modes){
 						node.status(modes[sensor.mode]);
@@ -741,6 +747,7 @@ module.exports = function(RED) {
 						}
 					}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
 						// send broadcast rtc to 101 and 102 regardless of settings
+						console.log('Mark 1');
 						if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
 							this.fly_101_in_progress = true;
 							var broadcast_tout = setTimeout(() => {
