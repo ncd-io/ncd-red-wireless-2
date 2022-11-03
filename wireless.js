@@ -690,7 +690,6 @@ module.exports = function(RED) {
 				}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
 					// send broadcast rtc to 101 and 102 regardless of settings
 					if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
-						this.gateway.fly_101_in_progress = true;
 						var broadcast_tout = setTimeout(() => {
 							_send_otn_request(sensor);
 						}, 100);
@@ -718,9 +717,26 @@ module.exports = function(RED) {
 					}else{
 						_config(sensor, true);
 					}
-
+				} else if(config.sensor_type == 101 && sensor.mode == "OTN" || config.sensor_type == 102 && sensor.mode == "OTN"){
+					if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+						this.gateway.fly_101_in_progress = true;
+						node.warn('start timer 2 ' + Date.now());
+						var broadcast_tout = setTimeout(() => {
+							node.warn('broadcast timer expired ' + Date.now());
+							_broadcast_rtc(sensor);
+							var otf_timeout = setTimeout(() => {
+								node.warn('Sending OTF request ' + Date.now());
+								this.config_gateway.config_exit_otn_mode(sensor.mac);
+							}, 1000);
+						}, 2000);
+					}else{
+						node.warn('Attempted to start a new rtc broadcast, but denied rightly at ' + Date.now());
+						var otf_timeout = setTimeout(() => {
+							node.warn('Sending OTF request ' + Date.now());
+							this.config_gateway.config_exit_otn_mode(sensor.mac);
+						}, 3000);
+					}
 				}
-
 			});
 		}else if(config.sensor_type){
 			this.gtw_on('sensor_data-'+config.sensor_type, (data) => {
@@ -767,7 +783,6 @@ module.exports = function(RED) {
 					}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
 						// send broadcast rtc to 101 and 102 regardless of settings
 						if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
-							this.gateway.fly_101_in_progress = true;
 							var broadcast_tout = setTimeout(() => {
 								_send_otn_request(sensor);
 							}, 100);
@@ -796,6 +811,25 @@ module.exports = function(RED) {
 							_config(sensor, true);
 						}
 
+					}else if(config.sensor_type == 101 && sensor.mode == "OTN" || config.sensor_type == 102 && sensor.mode == "OTN"){
+						if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+							this.gateway.fly_101_in_progress = true;
+							node.warn('start timer 2 ' + Date.now());
+							var broadcast_tout = setTimeout(() => {
+								node.warn('broadcast timer expired ' + Date.now());
+								_broadcast_rtc(sensor);
+								var otf_timeout = setTimeout(() => {
+									node.warn('Sending OTF request ' + Date.now());
+									this.config_gateway.config_exit_otn_mode(sensor.mac);
+								}, 1000);
+							}, 2000);
+						}else{
+							node.warn('Attempted to start a new rtc broadcast, but denied rightly at ' + Date.now());
+							var otf_timeout = setTimeout(() => {
+								node.warn('Sending OTF request ' + Date.now());
+								this.config_gateway.config_exit_otn_mode(sensor.mac);
+							}, 3000);
+						}
 					}
 				}
 			});
