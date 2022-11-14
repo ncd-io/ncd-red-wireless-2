@@ -136,9 +136,8 @@ module.exports = function(RED) {
 		});
 		node.gateway.on('sensor_mode', (d) => {
 			node.set_status();
-			node.send({topic: 'sensor_mode', payload: d});
+			node.send({topic: 'sensor_mode', payload: d, time: Date.now()});
 		});
-
 		node.gateway.on('receive_packet-unknown_device',(d)=>{
 			node.set_status();
 			msg1 = {topic:'somethingTopic',payload:"something"};
@@ -190,9 +189,6 @@ module.exports = function(RED) {
 			events[event] = cb;
 			this.config_gateway.on(event, cb);
 		};
-
-
-
 		function _send_otn_request(sensor){
 			return new Promise((top_fulfill, top_reject) => {
 				var msg = {};
@@ -262,7 +258,7 @@ module.exports = function(RED) {
 								if(name != 'finish') msg[name] = true;
 								else{
 									// #OTF
-									this.fly_101_in_progress = false;
+									this.gateway.fly_101_in_progress = false;
 									node.send({topic: 'RTC Broadcast', payload: msg});
 									top_fulfill(msg);
 								}
@@ -656,42 +652,44 @@ module.exports = function(RED) {
 				});
 			});
 			this.gtw_on('set_destination_address'+config.addr, (d) => {
-				return new Promise((top_fulfill, top_reject) => {
-					var msg = {};
-					setTimeout(() => {
-						var tout = setTimeout(() => {
-							node.status(modes.PGM_ERR);
-							node.send({topic: 'FLY Set Destination Address', payload: msg});
-						}, 10000);
+				if(config.auto_config){
+					return new Promise((top_fulfill, top_reject) => {
+						var msg = {};
+						setTimeout(() => {
+							var tout = setTimeout(() => {
+								node.status(modes.PGM_ERR);
+								node.send({topic: 'FLY Set Destination Address', payload: msg});
+							}, 10000);
 
-						var promises = {};
+							var promises = {};
 
-						promises.config_dest_address_fly = node.config_gateway.config_set_destination(d, parseInt(config.destination, 16));
+							promises.config_dest_address_fly = node.config_gateway.config_set_destination(d, parseInt(config.destination, 16));
 
-						promises.finish = new Promise((fulfill, reject) => {
-							node.config_gateway.queue.add(() => {
-								return new Promise((f, r) => {
-									clearTimeout(tout);
-									fulfill();
-									f();
+							promises.finish = new Promise((fulfill, reject) => {
+								node.config_gateway.queue.add(() => {
+									return new Promise((f, r) => {
+										clearTimeout(tout);
+										fulfill();
+										f();
+									});
 								});
 							});
+							for(var i in promises){
+								(function(name){
+									promises[name].then((f) => {
+										if(name != 'finish') msg[name] = true;
+										else{
+											node.send({topic: 'FLY Set Destination Address', payload: msg});
+											top_fulfill(msg);
+										}
+									}).catch((err) => {
+										msg[name] = err;
+									});
+								})(i);
+							}
 						});
-						for(var i in promises){
-							(function(name){
-								promises[name].then((f) => {
-									if(name != 'finish') msg[name] = true;
-									else{
-										node.send({topic: 'FLY Set Destination Address', payload: msg});
-										top_fulfill(msg);
-									}
-								}).catch((err) => {
-									msg[name] = err;
-								});
-							})(i);
-						}
 					});
-				});
+				}
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
 				if(sensor.mode in modes){
@@ -706,34 +704,58 @@ module.exports = function(RED) {
 					// _send_otn_request(sensor);
 					// Sensors having issues seeing OTN request sent too quickly
 					// Added timeout to fix issue
-					// MARK TODO broadcast fix
-					if(config.sensor_type == 101 || config.sensor_type == 102){
-						if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
-							this.fly_101_in_progress = true;
-							var broadcast_tout = setTimeout(() => {
-								_broadcast_rtc(sensor);
-							}, 1000);
-						}
-						var tout = setTimeout(() => {
-							_send_otn_request(sensor);
-						}, 1200);
-					}else{
-						var tout = setTimeout(() => {
+					var tout = setTimeout(() => {
+						_send_otn_request(sensor);
+					}, 100);
+				}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
+					// send broadcast rtc to 101 and 102 regardless of settings
+					if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+						var broadcast_tout = setTimeout(() => {
 							_send_otn_request(sensor);
 						}, 100);
 					}
-				}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
-					// send broadcast rtc to 101 and 102 regardless of settings
-					if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
-						this.fly_101_in_progress = true;
-						var broadcast_tout = setTimeout(() => {
-							_broadcast_rtc(sensor);
-						}, 1000);
-					}
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
-					_config(sensor, true);
+					// MARK TODO broadcast - insert timing
+					if(config.sensor_type == 101 || config.sensor_type == 102){
+						if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+							this.gateway.fly_101_in_progress = true;
+							node.warn('start timer 2 ' + Date.now());
+							var broadcast_tout = setTimeout(() => {
+								node.warn('broadcast timer expired ' + Date.now());
+								_broadcast_rtc(sensor);
+							}, 2000);
+						}else{
+							node.warn('Attempted to start a new rtc broadcast, but denied rightly at ' + Date.now());
+						}
+						if(config.auto_config && config.on_the_fly_enable){
+							var tout = setTimeout(() => {
+								node.warn('config timer expired' + Date.now());
+								_config(sensor, true);
+							}, 3500);
+						}
+					}else{
+						_config(sensor, true);
+					}
+				} else if(config.sensor_type == 101 && sensor.mode == "OTN" || config.sensor_type == 102 && sensor.mode == "OTN"){
+					if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+						this.gateway.fly_101_in_progress = true;
+						node.warn('start timer 2 ' + Date.now());
+						var broadcast_tout = setTimeout(() => {
+							node.warn('broadcast timer expired ' + Date.now());
+							_broadcast_rtc(sensor);
+							var otf_timeout = setTimeout(() => {
+								node.warn('Sending OTF request ' + Date.now());
+								this.config_gateway.config_exit_otn_mode(sensor.mac);
+							}, 1000);
+						}, 2000);
+					}else{
+						node.warn('Attempted to start a new rtc broadcast, but denied rightly at ' + Date.now());
+						var otf_timeout = setTimeout(() => {
+							node.warn('Sending OTF request ' + Date.now());
+							this.config_gateway.config_exit_otn_mode(sensor.mac);
+						}, 3000);
+					}
 				}
-
 			});
 		}else if(config.sensor_type){
 			this.gtw_on('sensor_data-'+config.sensor_type, (data) => {
@@ -745,45 +767,45 @@ module.exports = function(RED) {
 					payload: data.sensor_data
 				});
 			});
-			// node.config_gateway.on('set_destination_address', (d) => {
 			this.gtw_on('set_destination_address'+config.sensor_type, (d) => {
-				return new Promise((top_fulfill, top_reject) => {
-					var msg = {};
-					setTimeout(() => {
-						var tout = setTimeout(() => {
-							node.status(modes.PGM_ERR);
-							node.send({topic: 'FLY Set Destination Address', payload: msg});
-						}, 10000);
+				if(config.auto_config){
+					return new Promise((top_fulfill, top_reject) => {
+						var msg = {};
+						setTimeout(() => {
+							var tout = setTimeout(() => {
+								node.status(modes.PGM_ERR);
+								node.send({topic: 'FLY Set Destination Address', payload: msg});
+							}, 10000);
 
-						var promises = {};
+							var promises = {};
 
-						promises.config_dest_address_fly = node.config_gateway.config_set_destination(d, parseInt(config.destination, 16));
+							promises.config_dest_address_fly = node.config_gateway.config_set_destination(d, parseInt(config.destination, 16));
 
-						promises.finish = new Promise((fulfill, reject) => {
-							node.config_gateway.queue.add(() => {
-								return new Promise((f, r) => {
-									clearTimeout(tout);
-									fulfill();
-									f();
+							promises.finish = new Promise((fulfill, reject) => {
+								node.config_gateway.queue.add(() => {
+									return new Promise((f, r) => {
+										clearTimeout(tout);
+										fulfill();
+										f();
+									});
 								});
 							});
+							for(var i in promises){
+								(function(name){
+									promises[name].then((f) => {
+										if(name != 'finish') msg[name] = true;
+										else{
+											node.send({topic: 'FLY Set Destination Address', payload: msg});
+											top_fulfill(msg);
+										}
+									}).catch((err) => {
+										msg[name] = err;
+									});
+								})(i);
+							}
 						});
-						for(var i in promises){
-							(function(name){
-								promises[name].then((f) => {
-									if(name != 'finish') msg[name] = true;
-									else{
-										// #OTF
-										node.send({topic: 'FLY Set Destination Address', payload: msg});
-										top_fulfill(msg);
-									}
-								}).catch((err) => {
-									msg[name] = err;
-								});
-							})(i);
-						}
 					});
-				});
+				}
 			});
 			this.pgm_on('sensor_mode', (sensor) => {
 				if(sensor.type == config.sensor_type){
@@ -799,32 +821,59 @@ module.exports = function(RED) {
 						// _send_otn_request(sensor);
 						// Sensors having issues seeing OTN request sent too quickly
 						// Added timeout to fix issue
-						// MARK TODO broadcast fix
-						if(config.sensor_type == 101 || config.sensor_type == 102){
-							if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
-								this.fly_101_in_progress = true;
-								var broadcast_tout = setTimeout(() => {
-									_broadcast_rtc(sensor);
-								}, 1000);
-							}
-							var tout = setTimeout(() => {
-								_send_otn_request(sensor);
-							}, 1200);
-						}else{
-							var tout = setTimeout(() => {
+						var tout = setTimeout(() => {
+							_send_otn_request(sensor);
+						}, 100);
+					}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
+						// send broadcast rtc to 101 and 102 regardless of settings
+						if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+							var broadcast_tout = setTimeout(() => {
 								_send_otn_request(sensor);
 							}, 100);
 						}
-					}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
-						// send broadcast rtc to 101 and 102 regardless of settings
-						if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
-							this.fly_101_in_progress = true;
-							var broadcast_tout = setTimeout(() => {
-								_broadcast_rtc(sensor);
-							}, 1000);
-						}
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
-						_config(sensor, true);
+						// MARK TODO broadcast - insert timing
+
+						if(config.sensor_type == 101 || config.sensor_type == 102){
+							if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+								this.gateway.fly_101_in_progress = true;
+								node.warn('start timer 2 ' + Date.now());
+								var broadcast_tout = setTimeout(() => {
+									node.warn('broadcast timer expired ' + Date.now());
+									_broadcast_rtc(sensor);
+								}, 2000);
+							}else{
+								node.warn('Attempted to start a new rtc broadcast, but denied rightly at ' + Date.now());
+							}
+							if(config.auto_config && config.on_the_fly_enable){
+								var tout = setTimeout(() => {
+									node.warn('config timer expired' + Date.now());
+									_config(sensor, true);
+								}, 3500);
+							}
+						}else{
+							_config(sensor, true);
+						}
+
+					}else if(config.sensor_type == 101 && sensor.mode == "OTN" || config.sensor_type == 102 && sensor.mode == "OTN"){
+						if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
+							this.gateway.fly_101_in_progress = true;
+							node.warn('start timer 2 ' + Date.now());
+							var broadcast_tout = setTimeout(() => {
+								node.warn('broadcast timer expired ' + Date.now());
+								_broadcast_rtc(sensor);
+								var otf_timeout = setTimeout(() => {
+									node.warn('Sending OTF request ' + Date.now());
+									this.config_gateway.config_exit_otn_mode(sensor.mac);
+								}, 1000);
+							}, 2000);
+						}else{
+							node.warn('Attempted to start a new rtc broadcast, but denied rightly at ' + Date.now());
+							var otf_timeout = setTimeout(() => {
+								node.warn('Sending OTF request ' + Date.now());
+								this.config_gateway.config_exit_otn_mode(sensor.mac);
+							}, 3000);
+						}
 					}
 				}
 			});
