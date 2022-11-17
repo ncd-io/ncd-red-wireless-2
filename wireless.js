@@ -671,6 +671,7 @@ module.exports = function(RED) {
 			});
 			this.gtw_on('set_destination_address'+config.addr, (d) => {
 				if(config.auto_config){
+					node.warn('Setting destination address');
 					return new Promise((top_fulfill, top_reject) => {
 						var msg = {};
 						setTimeout(() => {
@@ -787,6 +788,7 @@ module.exports = function(RED) {
 			});
 			this.gtw_on('set_destination_address'+config.sensor_type, (d) => {
 				if(config.auto_config){
+					node.warn('Setting destination address');
 					return new Promise((top_fulfill, top_reject) => {
 						var msg = {};
 						setTimeout(() => {
