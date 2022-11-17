@@ -298,6 +298,7 @@ module.exports = function(RED) {
 					}else{
 						var mac = sensor.mac;
 						var promises = {};
+						var reboot = false;
 						if(config.form_network){
 							promises.establish_config_network_1 = node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF');
 							promises.establish_config_network_2 = node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF');
@@ -307,6 +308,7 @@ module.exports = function(RED) {
 							promises.destination = node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16));
 						}
 						if(config.pan_id_active){
+							reboot = true;
 							promises.network_id = node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16));
 						}
 						// var promises = {
@@ -619,7 +621,11 @@ module.exports = function(RED) {
 								}
 						}
 					}
-					if(otf){
+					// If we changed the network ID reboot the sensor to take effect.
+					// TODO if we add the encryption key command to node-red we need to reboot for it as well.
+					if(reboot){
+						promises.reboot_sensor = node.config_gateway.config_reboot_sensor(mac);
+					} else if(otf){
 						promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
 					}
 					promises.finish = new Promise((fulfill, reject) => {
