@@ -128,8 +128,21 @@
 
 <script type="text/javascript">
 	NCD_validators = {
-		number_range: function(l, h, base){
+		number_range: function(l, h, base, property_name = false){
 			if(!base) base = 10;
+			if(property_name === 'on_request_timeout_80'){
+				return function(v){
+					var int = parseInt(v, base);
+					if(this.on_request_timeout_80 == 0){
+						console.log('ERROR: Invalid property detect. Setting on_request_timeout_80 to default value');
+						$("#node-input-on_request_timeout_80").val(1);
+						return true;
+					} else if(v == undefined){
+						return true;
+					}
+					return int >= l && int <= h;
+				}
+			}
 			if(base == 'decimal'){
 				return function(v){
 					var n = parseFloat(v);
@@ -221,7 +234,7 @@
 			measurement_mode_80: {value: 0},
 
 			on_request_timeout_80_active: {value: ""},
-			on_request_timeout_80: {value: 0},
+			on_request_timeout_80: {value: 1, validate: NCD_validators.number_range(1, 10, 10, 'on_request_timeout_80')},
 
 
 			deadband_80_active: {value: ""},
@@ -1010,7 +1023,7 @@
 					</div>
 					<div>
 						<label for="node-input-on_request_timeout_80"><i class="icon-tag"></i>Value:</label>
-						<input type="text" id="node-input-on_request_timeout_80">
+						<input type="text" id="node-input-on_request_timeout_80" value="1">
 					</div>
 				</div>
 			</div>
