@@ -199,8 +199,14 @@ module.exports = function(RED) {
 					}, 10000);
 
 					var promises = {};
-
-					promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(sensor.mac);
+					// This command is used for OTF on types 53, 80,81,82,83,84, 101, 102 , 518,519
+					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519];
+					// TODO psuedo code
+					if(sensor.sensor_type in original_otf_devices){
+						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(sensor.mac);
+					}else{
+						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode_common(sensor.mac);
+					}
 
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
