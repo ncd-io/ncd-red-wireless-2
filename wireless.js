@@ -201,13 +201,13 @@ module.exports = function(RED) {
 					var promises = {};
 					// This command is used for OTF on types 53, 80,81,82,83,84, 101, 102 , 518,519
 					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519];
-					// TODO psuedo code
-					if(sensor.type in original_otf_devices){
+					if(original_otf_devices.includes(sensor.type)){
+						// This command is used for OTF on types 53, 80,81,82,83,84, 101, 102 , 518,519
 						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(sensor.mac);
 					}else{
+						// This command is used for OTF on types not 53, 80,81,82,83,84, 101, 102 , 518,519
 						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode_common(sensor.mac);
 					}
-
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
 							return new Promise((f, r) => {
@@ -375,6 +375,14 @@ module.exports = function(RED) {
 							case 44:
 								if(config.force_calibration_co2_auto_config){
 									promises.sensor_forced_calibration = node.config_gateway.config_set_sensor_forced_calibration(mac, parseInt(config.force_calibration_co2));
+								}
+								break;
+							case 47:
+								if(config.roll_angle_threshold_47_active){
+									promises.roll_angle_threshold_47 = node.config_gateway.config_set_roll_threshold_47(mac, parseInt(config.roll_angle_threshold_47));
+								}
+								if(config.pitch_angle_threshold_47_active){
+									promises.pitch_angle_threshold_47 = node.config_gateway.config_set_pitch_threshold_47(mac, parseInt(config.pitch_angle_threshold_47));
 								}
 								break;
 							case 80:
@@ -634,10 +642,10 @@ module.exports = function(RED) {
 					if(reboot){
 						promises.reboot_sensor = node.config_gateway.config_reboot_sensor(mac);
 					} else if(otf){
-						if(sensor.type in original_otf_devices){
+						if(original_otf_devices.includes(sensor.type)){
 							promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
 						}else{
-							promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode_common(mac);
+							promises.config_exit_otn_mode_common = node.config_gateway.config_exit_otn_mode_common(mac);
 						}
 					}
 					promises.finish = new Promise((fulfill, reject) => {
