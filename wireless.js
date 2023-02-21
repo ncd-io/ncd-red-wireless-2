@@ -202,7 +202,7 @@ module.exports = function(RED) {
 					// This command is used for OTF on types 53, 80,81,82,83,84, 101, 102 , 518,519
 					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519];
 					// TODO psuedo code
-					if(sensor.sensor_type in original_otf_devices){
+					if(sensor.type in original_otf_devices){
 						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(sensor.mac);
 					}else{
 						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode_common(sensor.mac);
@@ -627,12 +627,18 @@ module.exports = function(RED) {
 								}
 						}
 					}
+					// These sensors listed in original_otf_devices use a different OTF code.
+					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519];
 					// If we changed the network ID reboot the sensor to take effect.
 					// TODO if we add the encryption key command to node-red we need to reboot for it as well.
 					if(reboot){
 						promises.reboot_sensor = node.config_gateway.config_reboot_sensor(mac);
 					} else if(otf){
-						promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
+						if(sensor.type in original_otf_devices){
+							promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
+						}else{
+							promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode_common(mac);
+						}
 					}
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
