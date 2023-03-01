@@ -444,6 +444,9 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								}
@@ -503,6 +506,9 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								}
@@ -546,6 +552,9 @@ module.exports = function(RED) {
 								}
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
+								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -599,6 +608,9 @@ module.exports = function(RED) {
 								}
 								if(config.acceleration_interrupt_threshold_84_active){
 									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
+								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -703,6 +715,9 @@ module.exports = function(RED) {
 								}
 								if(config.acceleration_interrupt_threshold_84_active){
 									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
+								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
