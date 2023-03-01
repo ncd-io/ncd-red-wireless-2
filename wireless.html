@@ -236,6 +236,8 @@
 			on_request_timeout_80_active: {value: ""},
 			on_request_timeout_80: {value: 1, validate: NCD_validators.number_range(1, 10, 10, 'on_request_timeout_80')},
 
+			sensor_boot_time_420ma_active: {value: ""},
+			sensor_boot_time_420ma: {value: 0, validate: NCD_validators.number_range(0, 255)},
 
 			deadband_80_active: {value: ""},
 			deadband_80: {value: 0, validate: NCD_validators.number_range(0, 255)},
@@ -1426,6 +1428,24 @@
 					<div>
 						<label for="node-input-current_calibration_82"><i class="icon-tag"></i>Value:</label>
 						<input type="text" id="node-input-current_calibration_82">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-14 data-sensor-45 data-sensor-48 data-sensor-52>
+				<div class="form-row ncd-active-check">
+					<strong>Sensor Boot Time</strong>
+					<p class="caption">
+						This value represents the number of seconds to wait after applying power to the sensor before taking a reading.
+						Only recommended for sensors powered by the Wireless Sensor's power supply.
+					</p>
+					<div>
+						<label for="node-input-sensor_boot_time_420ma_active">Active:</label>
+						<input type="checkbox" id="node-input-sensor_boot_time_420ma_active" class="ncd-config-toggle" data-target-id="node-input-sensor_boot_time_420ma" value="1">
+					</div>
+					<div>
+						<label for="node-input-sensor_boot_time_420ma"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-sensor_boot_time_420ma" placeholder="0" value="0">
 					</div>
 				</div>
 			</div>
