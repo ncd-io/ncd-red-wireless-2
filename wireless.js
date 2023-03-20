@@ -370,6 +370,16 @@ module.exports = function(RED) {
 							case 24:
 								var interr = parseInt(config.activ_interr_x) | parseInt(config.activ_interr_y) | parseInt(config.activ_interr_z) | parseInt(config.activ_interr_op);
 								promises.activity_interrupt = node.config_gateway.config_set_activ_interr(mac, interr);
+							case 35:
+								if(config.counter_threshold_35_active){
+									promises.config_set_counter_threshold_35 = node.config_gateway.config_set_counter_threshold_35(mac, parseInt(config.counter_threshold_35));
+								}
+								break;
+							case 36:
+								if(config.counter_threshold_35_active){
+									promises.config_set_counter_threshold_35 = node.config_gateway.config_set_counter_threshold_35(mac, parseInt(config.counter_threshold_35));
+								}
+								break;
 							case 40:
 								promises.filtering = node.config_gateway.config_set_filtering(mac, parseInt(config.filtering));
 								promises.data_rate = node.config_gateway.config_set_data_rate(mac, parseInt(config.data_rate));
