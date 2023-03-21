@@ -77,6 +77,7 @@ module.exports = function(RED) {
 			}).catch((err) => {
 				console.log(err);
 				node.is_config = 2;
+				node.gateway.digi.serial.reconnect();
 				if(cb) cb(node.is_config);
 				return node.is_config;
 			}).then((mode) => {
