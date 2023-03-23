@@ -25,6 +25,6 @@
         }
     },
     "dependencies": {
-        "ncd-red-comm": "1.8.1"
+        "ncd-red-comm": "1.8.2"
     }
 }
