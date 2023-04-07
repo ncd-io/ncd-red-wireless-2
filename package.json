@@ -1,6 +1,6 @@
 {
     "name": "ncd-red-wireless-2",
-    "version": "2.1.40",
+    "version": "2.2.0",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -25,6 +25,6 @@
         }
     },
     "dependencies": {
-        "ncd-red-comm": "1.8.2"
+        "ncd-red-comm": "2.0.0"
     }
 }
