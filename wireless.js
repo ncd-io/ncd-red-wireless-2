@@ -58,7 +58,8 @@ module.exports = function(RED) {
 				node.gateway.digi.serial.on('ready', () => {
 					node.check_mode((mode) => {
 						var pan_id = parseInt(config.pan_id, 16);
-						if(!mode && node.gateway.pan_id != pan_id){
+						// if(!mode && node.gateway.pan_id != pan_id){
+						if(node.gateway.pan_id != pan_id){
 							node.gateway.digi.send.at_command("ID", [pan_id >> 8, pan_id & 255]).then((res) => {
 								node.gateway.pan_id = pan_id;
 							}).catch((err) => {
@@ -171,7 +172,7 @@ module.exports = function(RED) {
 		node.set_status();
 		node._gateway_node.on('mode_change', (mode) => {
 			node.set_status();
-			if(this.gateway.modem_mac && this._gateway_node.is_config == 0){
+			if(this.gateway.modem_mac && this._gateway_node.is_config == 0 || this.gateway.modem_mac && this._gateway_node.is_config == 1){
 				node.send({topic: 'modem_mac', payload: this.gateway.modem_mac, time: Date.now()});
 			}else{
 				node.send({topic: 'error', payload: {code: 1, description: 'Wireless module did not respond'}, time: Date.now()});
@@ -1129,6 +1130,7 @@ module.exports = function(RED) {
 					delete gateway_pool[port];
 					res.json({pan_id: pan_id.toString(16)});
 				}).catch((err) => {
+					console.log(err);
 					serial.close();
 					delete gateway_pool[port];
 					res.json(false);
